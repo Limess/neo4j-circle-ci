@@ -1,0 +1,43 @@
+version: 2
+
+jobs:
+  run:
+    docker:
+      - image: circleci/node:8.11.1-browsers
+    environment:
+      NEO4J_VERSION: "3.2.9"
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependency-npm-{{ checksum "package.json" }}-
+            - v1-dependency-npm-{{ checksum "package.json" }}
+            - v1-dependency-npm-
+
+      - run:
+          name: Install dependencies
+          command: npm install
+
+      - save_cache:
+          key: v1-dependency-npm-{{ checksum "package.json" }}-{{ epoch }}
+          paths:
+            - ./node_modules/
+
+      - run:
+          name: Prepare neo4j database
+          command: |
+            mkdir -p neo4j
+            wget -q dist.neo4j.org/neo4j-enterprise-$NEO4J_VERSION-unix.tar.gz
+            tar -xzf neo4j-enterprise-$NEO4J_VERSION-unix.tar.gz -C neo4j --strip-components 1
+            sed -i "s|#dbms.security.auth_enabled=false|dbms.security.auth_enabled=false|g" neo4j/conf/neo4j.conf
+            ./scripts/neo4j-plugins
+            neo4j/bin/neo4j start
+            ./scripts/neo4j-wait-for-start
+            node scripts/init.js
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - run
