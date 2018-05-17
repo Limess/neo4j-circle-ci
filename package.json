@@ -1,0 +1,15 @@
+{
+    "name": "neo4j-circle-ci",
+    "version": "1.0.0",
+    "description": "Minimal project for Circle CI 1 and 2 debugging with neo4j",
+    "main": "db-connection.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "neo4j-driver": "^1.6.1",
+        "node": "^8.11.1"
+    }
+}

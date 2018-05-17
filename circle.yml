@@ -1,0 +1,24 @@
+machine:
+  node:
+    version: 8.11.1
+  java:
+    version: oraclejdk8
+  environment:
+    NEO4J_VERSION: "3.2.9"
+    BOLT_PASSWORD: some-password
+    BOLT_URL: bolt://localhost:7687
+    BOLT_USER: some-user
+database:
+  override:
+    - mkdir -p neo4j
+    - wget -q dist.neo4j.org/neo4j-enterprise-$NEO4J_VERSION-unix.tar.gz
+    - tar -xzf neo4j-enterprise-$NEO4J_VERSION-unix.tar.gz -C neo4j --strip-components 1
+    - sed -i "s|#dbms.security.auth_enabled=false|dbms.security.auth_enabled=false|g" neo4j/conf/neo4j.conf
+    - ./scripts/neo4j-plugins
+    - neo4j/bin/neo4j start
+    - ./scripts/neo4j-wait-for-start
+    - ./node_modules/.bin/node init.js
+
+test:
+  post:
+    - mv coverage $CIRCLE_ARTIFACTS
