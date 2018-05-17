@@ -6,6 +6,10 @@ jobs:
       - image: circleci/node:8.11.1-browsers
     environment:
       NEO4J_VERSION: "3.2.9"
+      BOLT_PASSWORD: some-password
+      BOLT_URL: bolt://localhost:7687
+      BOLT_USER: some-user
+
     steps:
       - checkout
 
